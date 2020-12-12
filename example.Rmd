@@ -1,0 +1,28 @@
+---
+title: "Data Visualization Example 2"
+---
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+#read files, extract loans info, and omit all NAs
+transactions <- read.csv(".././anly503-fall2020-a5-nuot/data/transactions.csv")
+account <- read.csv(".././anly503-fall2020-a5-nuot/data/accounts_analytical.csv")
+loans <- account[,c('loan_date','loan_amount','loan_payment','loan_term', 'loan_status', 'loan_default')] 
+loans <- na.omit(loans)
+``` 
+
+```{r}
+
+p<-ggplot(loans, aes(x=loan_amount)) + 
+  geom_histogram(aes(y=..density..), position="identity", alpha=0.5, color="black", fill="white",bins=40) + 
+  geom_vline(aes(xintercept=mean(loan_amount)),
+            color="blue", linetype="dashed", size=1) +
+  geom_density(alpha=0.6) + 
+  scale_x_continuous(name="Loan Amount", labels = scales::comma)+
+  ggtitle("Distribution of Loans")
+
+p
+ 
+```

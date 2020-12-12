@@ -1,0 +1,12 @@
+name: "my-website"
+navbar:
+  title: "My Website"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Data Visualization Example 1"
+      href: about.html
+    - text: "Data Visualization Example 2"
+      href: example.html
+    - text: "Final Project"
+      href: project.html

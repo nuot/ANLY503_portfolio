@@ -1,0 +1,27 @@
+---
+title: "Data Visualization Example 1"
+---
+
+```{r,echo=FALSE}
+library(dplyr)
+library(ggplot2)
+transactions <- read.csv(".././anly503-fall2020-a5-nuot/data/transactions.csv")
+account <- read.csv(".././anly503-fall2020-a5-nuot/data/accounts_analytical.csv")
+```
+
+```{r,echo=FALSE}
+#Whether an account has a credit card or not and Whether an account has a loan or not
+account$has_cred_card <- ifelse(is.na(account$credit_cards), 'No Credit Card', 'Has Credit Care')
+account$has_loan <- ifelse(is.na(account$loan_amount), 'No Loan', 'Has Loan')
+
+#The average balance for the account
+balance <- transactions[,c('account_id','balance')]
+avg_bal <- aggregate(balance, by = list(balance$account_id), mean)
+names(avg_bal)[names(avg_bal)=='balance'] <- 'avg_balance'
+account <- left_join(account, avg_bal, by=c('account_id'='account_id'))
+plt <- qplot(has_cred_card, avg_balance, data=account, facets=~has_loan, main="Account Info",xlab="has credit card or not", ylab="Average Balance") + geom_boxplot(aes(fill = has_cred_card))
+```
+
+```{r}
+plt
+```

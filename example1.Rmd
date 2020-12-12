@@ -1,0 +1,71 @@
+---
+title: "Data Visualization Example 3"
+---
+
+```{r setup, include = FALSE}
+knitr::knit_engines$set(python = reticulate::eng_python)
+knitr::opts_chunk$set(python.reticulate = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+library(reticulate)
+use_python("/Users/nuotian/opt/anaconda3/bin/python3",required = TRUE)
+```
+
+
+```{python, eval = FALSE}
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+data = pd.read_excel('.././anly503-fall2020-a7-nuot/data/State_to_State_Migrations_Table_2018.xls', skiprows =6)
+data.rename(columns={ data.columns[0]: "Current residence in" }, inplace = True)
+
+cols = ['Current residence in','New York','Texas','California','Georgia']
+df = data[cols]
+
+df = df[~df['Current residence in'].isin(['United States2','Puerto Rico'])]
+df = df.dropna(subset=['Current residence in'])
+df = df.dropna(how='all',subset=['New York','Texas','California','Georgia'])
+df = df.reset_index()
+df = df.drop(['index'], axis=1)
+for col in ['New York', 'Texas', 'California', 'Georgia']:
+    df[col] = df[col].astype('Int64')
+
+ny = df.nlargest(10, 'New York')
+ny['source'] = 'New York'
+ny = ny.drop(['Texas','California','Georgia'], axis=1)
+ny.rename(columns={ ny.columns[0]: "target", 'New York': "count"}, inplace = True)
+
+ca = df.nlargest(10, 'California')
+ca['source'] = 'California'
+ca = ca.drop(['New York','Texas','Georgia'], axis=1)
+ca.rename(columns={ ca.columns[0]: "target", 'California': "count"}, inplace = True)
+
+ga = df.nlargest(10, 'Georgia')
+ga['source'] = 'Georgia'
+ga = ga.drop(['New York','Texas','California'], axis=1)
+ga.rename(columns={ ga.columns[0]: "target", 'Georgia': "count"}, inplace = True)
+
+tx = df.nlargest(10, 'Texas')
+tx['source'] = 'Texas'
+tx = tx.drop(['New York','California','Georgia'], axis=1)
+tx.rename(columns={ tx.columns[0]: "target", 'Texas': "count"}, inplace = True)
+
+
+
+new_data = pd.concat([ny, ca, ga, tx], axis=0)
+new_data.to_csv('new_data.csv')
+
+
+import networkx as nx
+import matplotlib.pyplot as plt
+
+new_data = pd.read_csv('.././anly503-fall2020-a7-nuot/new_data.csv')
+
+g = nx.from_pandas_edgelist(new_data, source='source', target='target', edge_attr= 'count')
+pos = nx.spring_layout(g)
+
+labels = new_data['target'].tolist() 
+
+plt.figure(1,figsize=(10,10)) 
+nx.draw_networkx(g, pos,with_labels=labels, node_size=1500, node_color="skyblue", node_shape="s", alpha=0.5, linewidths=20)
+plt.show()
+```
