@@ -236,7 +236,7 @@ fig.savefig('Figure1.png')
 knitr::include_graphics('Figure1.png')
 ```
 
-### I also curious which counties are more interested in building the house by their own.
+### I also curious which counties have most family dwellings. From the nexwork plot, it shows that 'ozone park' are mostly close to the center '01 one family dwellings', which means that county has the most family dwellings comparing to other county.
 
 ```{python, eval = FALSE}
 import pandas as pd
