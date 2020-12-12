@@ -17,7 +17,7 @@ Introduction
 ## A overall introduction to the project
 The final project is the study for real estates. It demonstrates how the housing distribute in a certain area; how the year each 
 architecture built affects the land value and taxes; which counties have preference of hand making homes, etc. It would be useful
-as a add-on part of any real estate price predicion tasks.Data used: Zillow Prize: Zillow’s Home Value Prediction (Zestimate) and
+as a add-on part of any real estate price prediction tasks.Data used: Zillow Prize: Zillow’s Home Value Prediction (Zestimate) and
 NYC Property Sales
 
 ```{r, echo=FALSE, fig.width=5, fig.height=5}
@@ -236,9 +236,10 @@ fig.savefig('Figure1.png')
 knitr::include_graphics('Figure1.png')
 ```
 
-### I also curious which counties have most family dwellings. From the nexwork plot, it shows that 'ozone park' are mostly close to the center '01 one family dwellings', which means that county has the most family dwellings comparing to other county.
+### I also curious which counties have most family dwellings. From the nexwork plot, it shows that 'st.albans' is closest to the center 'family dwellings', which means that county has the most family dwellings comparing to other counties.
 
 ```{python, eval = FALSE}
+
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -247,20 +248,27 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import matplotlib.pyplot as plt
 
-data = pd.read_csv('ny.csv')
+data = pd.read_csv('.././anly503-fall2020-project-nuot/ny.csv')
 data = data[data['BuildingCategory'] =='01 ONE FAMILY DWELLINGS']
 
-data = data.nlargest(20, 'Count')
+data = data.nlargest(25, 'Count')
+
+
+data = data.replace(to_replace='01 ONE FAMILY DWELLINGS', value='family dwellings', regex=True)
+data['Neighborhood'] = data['Neighborhood'].astype(str).str.lower()
 
 g = nx.from_pandas_edgelist(data, source='Neighborhood', target='BuildingCategory', edge_attr= 'Count')
-pos = nx.spring_layout(g)
 
+pos = nx.spring_layout(g)
 
 labels = set(data['Neighborhood'].tolist())
 
 plt.figure(1,figsize=(10,10)) 
-nx.draw_networkx(g, pos,with_labels=labels, node_size=1300, node_color="#B19CD9", node_shape="s", alpha=0.5, linewidths=20)
-plt.save('plt2.png')
+
+nx.draw_networkx(g, pos,with_labels=labels, node_size=1300, node_color="#B19CD9", node_shape="s", alpha=0.5, linewidths=25)
+plt.save('Figure2.png')
+
+plt.show()
 ```
 
 ```{r, echo=FALSE, fig.width=5, fig.height=5}
