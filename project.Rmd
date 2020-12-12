@@ -11,6 +11,19 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 ```
+Introduction
+===
+
+## A overall introduction to the project
+The final project is the study for real estates. It demonstrates how the housing distribute in a certain area; how the year each 
+architecture built affects the land value and taxes; which counties have preference of hand making homes, etc. It would be useful
+as a add-on part of any real estate price predicion tasks.Data used: Zillow Prize: Zillow’s Home Value Prediction (Zestimate) and
+NYC Property Sales
+
+```{r, echo=FALSE, fig.width=5, fig.height=5}
+knitr::include_graphics('1_copy.jpeg')
+```
+
 
 Basic EDA
 === 
@@ -114,6 +127,52 @@ library(sf)
 library(mapview)
 locations_sf <- st_as_sf(locations, coords = c("long", "lat"), crs = 4326)
 mapview(locations_sf, color = "#B8BC86", cex= 'structurevalue',layer.name = "housing distribution")
+```
+
+Word Cloud
+===
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+###  Word Cloud on Reviews from Zillow shows that 'home' has the top frequency from the review, indicating people's highest concern. From other words, it also shows a positive sentiment analysis trends, which would be useful to consider when conducting some nlp tasks.(Reviews also helps a company to grow in the industry)
+```{r}
+
+# Load
+library("tm")
+library("tmap")
+library("SnowballC")
+library("wordcloud")
+library("RColorBrewer")
+
+text <- readLines('comment.txt',warn=FALSE)
+
+docs <- Corpus(VectorSource(text))
+
+toSpace <- content_transformer(function (x , pattern ) gsub(pattern, "", x))
+docs <- tm_map(docs, toSpace, '“')
+docs <- tm_map(docs, toSpace, "”")
+docs <- tm_map(docs, toSpace, "'\\|'")
+
+docs <- tm_map(docs, content_transformer(tolower))
+# Remove numbers
+docs <- tm_map(docs, removeNumbers)
+# Remove english common stopwords
+docs <- tm_map(docs, removeWords, stopwords("english"))
+# Remove punctuations
+docs <- tm_map(docs, removePunctuation)
+# Eliminate extra white spaces
+docs <- tm_map(docs, stripWhitespace)
+
+dtm <- TermDocumentMatrix(docs)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+
+set.seed(1234)
+wordcloud(words = d$word, freq = d$freq, min.freq = 2,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "PuRd"))
+
 ```
 
 Time Series and Network Analysis
